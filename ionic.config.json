@@ -1,0 +1,7 @@
+{
+  "name": "ionic-empty",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
