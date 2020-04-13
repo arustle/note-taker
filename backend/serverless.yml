@@ -1,0 +1,16 @@
+service:
+  name: note-taker-app
+
+plugins:
+  - serverless-webpack
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+
+  environment:
+    IMAGES_S3_BUCKET: note-taker-app-xyz-images-${self:provider.stage}
+
+

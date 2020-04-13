@@ -1,5 +1,5 @@
 {
-  "name": "ionic-empty",
+  "name": "note-taker",
   "integrations": {
     "capacitor": {}
   },
