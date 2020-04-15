@@ -3,14 +3,37 @@ service:
 
 plugins:
   - serverless-webpack
+  - serverless-dynamodb-local
+  - serverless-offline
 
 provider:
   name: aws
   runtime: nodejs12.x
-  stage: ${opt:stage, 'dev'}
-  region: ${opt:region, 'us-east-1'}
-
   environment:
-    IMAGES_S3_BUCKET: note-taker-app-xyz-images-${self:provider.stage}
+    IMAGES_S3_BUCKET: note-taker-xyz-images-${self:provider.stage}
+    SIGNED_URL_EXPIRATION: 3000
+
+
+custom:
+  serverless-offline:
+    port: 3003
+
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+
+functions:
+  GenerateUploadUrl:
+    handler: src/lambda/http/generateUploadUrl.handler
+    events:
+      - http:
+          method: post
+          path: images/upload-url
+          cors: true
+
 
 
