@@ -1,0 +1,158 @@
+{
+	"info": {
+		"_postman_id": "78f09e5e-1dbd-49dd-ba95-0907bacd275b",
+		"name": "note-taker",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Upload URL",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cd317739-d7d7-473e-aa7f-4f95d1cdcff6",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var schema = {",
+							"    \"required\": [",
+							"        \"uploadUrl\",",
+							"        \"imageId\"",
+							"    ],",
+							"    \"properties\": {",
+							"         \"uploadUrl\": {",
+							"             \"type\": \"string\",",
+							"         },",
+							"         \"imageId\": {",
+							"             \"type\": \"string\",",
+							"         },",
+							"    }",
+							"};",
+							"pm.test(\"body schema is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(tv4.validate(jsonData, schema)).to.be.true;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 800ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(800);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/images/upload-url",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"images",
+						"upload-url"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Records",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cd317739-d7d7-473e-aa7f-4f95d1cdcff6",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var schema = {",
+							"    \"required\": [",
+							"        \"uploadUrl\",",
+							"        \"imageId\"",
+							"    ],",
+							"    \"properties\": {",
+							"         \"uploadUrl\": {",
+							"             \"type\": \"string\",",
+							"         },",
+							"         \"imageId\": {",
+							"             \"type\": \"string\",",
+							"         },",
+							"    }",
+							"};",
+							"pm.test(\"body schema is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(tv4.validate(jsonData, schema)).to.be.true;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 800ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(800);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/images/upload-url",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"images",
+						"upload-url"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "0d75be78-1e2d-473e-a023-7de71a3b9f52",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "62f7f314-ed3f-4b4b-a30c-7682b8911676",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "1bba9e69-711a-4c35-9882-0175beb86c73",
+			"key": "server",
+			"value": "http://localhost:3000/dev",
+			"type": "string"
+		},
+		{
+			"id": "e255619e-900a-4271-9b2f-0e98f5fedc07",
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
