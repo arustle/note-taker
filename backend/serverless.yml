@@ -11,7 +11,7 @@ provider:
   runtime: nodejs12.x
   environment:
     IMAGES_S3_BUCKET: note-taker-xyz-images-${self:provider.stage}
-    SIGNED_URL_EXPIRATION: 3000
+    SIGNED_URL_EXPIRATION: 600 # in seconds
 
 
 custom:
@@ -33,6 +33,13 @@ functions:
       - http:
           method: post
           path: images/upload-url
+          cors: true
+  GetRecords:
+    handler: src/lambda/http/getRecords.handler
+    events:
+      - http:
+          method: get
+          path: records
           cors: true
 
 
