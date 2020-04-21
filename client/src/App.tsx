@@ -1,10 +1,11 @@
 import React from 'react';
-import { Redirect, Route } from 'react-router-dom';
+import {Redirect, Route, Switch} from 'react-router-dom';
 import {IonApp, IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs} from '@ionic/react';
 import { images, listOutline, homeOutline } from 'ionicons/icons';
 import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/Home';
 import Items from './pages/Items';
+import LogIn from './pages/Login';
 import RecordView from './pages/RecordView.route';
 
 /* Core CSS required for Ionic components to work properly */
@@ -25,34 +26,47 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import {useAuth} from "./auth/AuthProvider";
+import Tab2 from "./pages/Tab2";
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
+
+const App: React.FC<any> = () => {
+
+    const auth = useAuth();
+
+
+    // if (!auth.isAuthenticated()) return (<LogIn auth={auth} />);
+
+
+
+    return (
         <IonTabs>
-          <IonRouterOutlet>
-            <Route path="/home" component={Home} exact={true} />
-            <Route path="/items" component={Items} exact={true} />
-            <Route path="/records/:recordId" component={RecordView} exact={true} />
-            <Route exact path="/" render={() => <Redirect to="/home" />} />
-          </IonRouterOutlet>
-          <IonTabBar slot="bottom">
-              <IonTabButton tab="tab1" href="/home">
-                  <IonIcon icon={homeOutline} />
-                  <IonLabel>Home</IonLabel>
-              </IonTabButton>
-              <IonTabButton tab="tab2" href="/tab2">
-                  <IonIcon icon={images} />
-                  <IonLabel>Photos</IonLabel>
-              </IonTabButton>
-              <IonTabButton tab="tab3" href="/items">
-                  <IonIcon icon={listOutline} />
-                  <IonLabel>Items</IonLabel>
-              </IonTabButton>
-          </IonTabBar>
+            <IonRouterOutlet>
+                <Route exact path="/" component={Home} />
+                <Route exact path="/items" component={Items} />
+                <Route exact path="/tab2" component={Tab2} />
+                <Route exact path="/records/:recordId" component={RecordView} />
+            </IonRouterOutlet>
+            <IonTabBar slot="bottom">
+                <IonTabButton tab="tab1" href="/">
+                    <IonIcon icon={homeOutline}/>
+                    <IonLabel>Home</IonLabel>
+                </IonTabButton>
+                <IonTabButton tab="tab2" href="/tab2">
+                    <IonIcon icon={images}/>
+                    <IonLabel>Photos</IonLabel>
+                </IonTabButton>
+                <IonTabButton tab="tab3" href="/items">
+                    <IonIcon icon={images}/>
+                    <IonLabel>Photos</IonLabel>
+                </IonTabButton>
+                <IonTabButton tab="tab4" href="/items">
+                    <IonIcon icon={listOutline}/>
+                    <IonLabel>Items</IonLabel>
+                </IonTabButton>
+            </IonTabBar>
         </IonTabs>
-    </IonReactRouter>
-  </IonApp>
-);
+    );
+};
 
 export default App;
