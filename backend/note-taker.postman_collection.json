@@ -20,13 +20,13 @@
 							"var schema = {",
 							"    \"required\": [",
 							"        \"uploadUrl\",",
-							"        \"imageId\"",
+							"        \"attachmentId\"",
 							"    ],",
 							"    \"properties\": {",
 							"         \"uploadUrl\": {",
 							"             \"type\": \"string\",",
 							"         },",
-							"         \"imageId\": {",
+							"         \"attachmentId\": {",
 							"             \"type\": \"string\",",
 							"         },",
 							"    }",
@@ -47,15 +47,21 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "{{server}}/images/upload-url",
+					"raw": "{{server}}/attachments/upload-info",
 					"host": [
 						"{{server}}"
 					],
 					"path": [
-						"images",
-						"upload-url"
+						"attachments",
+						"upload-info"
 					]
 				}
 			},
@@ -67,7 +73,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "cd317739-d7d7-473e-aa7f-4f95d1cdcff6",
+						"id": "eb3ccbf7-6daf-4492-a6ca-6ddda959780e",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
@@ -75,15 +81,11 @@
 							"",
 							"var schema = {",
 							"    \"required\": [",
-							"        \"uploadUrl\",",
-							"        \"imageId\"",
+							"        \"items\"",
 							"    ],",
 							"    \"properties\": {",
-							"         \"uploadUrl\": {",
-							"             \"type\": \"string\",",
-							"         },",
-							"         \"imageId\": {",
-							"             \"type\": \"string\",",
+							"         \"items\": {",
+							"             \"type\": \"array\",",
 							"         },",
 							"    }",
 							"};",
@@ -102,16 +104,184 @@
 				}
 			],
 			"request": {
-				"method": "POST",
-				"header": [],
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
 				"url": {
-					"raw": "{{server}}/images/upload-url",
+					"raw": "{{server}}/records",
 					"host": [
 						"{{server}}"
 					],
 					"path": [
-						"images",
-						"upload-url"
+						"records"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Record",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "eb3ccbf7-6daf-4492-a6ca-6ddda959780e",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"body schema is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(tv4.validate(jsonData, pm.variables.get(\"RECORD_SCHEMA\"))).to.be.true;",
+							"",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 800ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(800);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{authToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"notes\": \"11111 22222 33333\",\n    \"recordType\": \"ANIMALS\",\n    \"entryDate\": \"2020-04-25T19:43:57.105Z\",\n    \"attachments\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server}}/records",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"records"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Record",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cd317739-d7d7-473e-aa7f-4f95d1cdcff6",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"body schema is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(tv4.validate(jsonData, pm.variables.get(\"RECORD_SCHEMA\"))).to.be.true;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 800ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(800);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{authToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{server}}/records/3f7f4446-5174-4977-9497-408ac21e6813",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"records",
+						"3f7f4446-5174-4977-9497-408ac21e6813"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Record",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "eb3ccbf7-6daf-4492-a6ca-6ddda959780e",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});",
+							"",
+							"",
+							"pm.test(\"body is empty\", function () {",
+							"    var jsonData = pm.response.text();",
+							"    pm.expect(jsonData).to.eql('');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 800ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(800);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{authToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"notes\": \"11111 22222 33333\",\n    \"recordType\": \"ANIMALS\",\n    \"entryDate\": \"2020-04-25T19:43:57.105Z\",\n    \"attachments\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server}}/records/e8485ffc-a5d5-4f4d-b2bf-28aaae8d2620",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"records",
+						"e8485ffc-a5d5-4f4d-b2bf-28aaae8d2620"
 					]
 				}
 			},
@@ -142,14 +312,20 @@
 	],
 	"variable": [
 		{
-			"id": "1bba9e69-711a-4c35-9882-0175beb86c73",
+			"id": "83622fae-5d0b-419e-ae22-f0ea6740008a",
 			"key": "server",
 			"value": "http://localhost:3000/dev",
 			"type": "string"
 		},
 		{
-			"id": "e255619e-900a-4271-9b2f-0e98f5fedc07",
+			"id": "81e73c9b-650e-45f1-bb38-6008fedb22c7",
 			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "3bdddd71-6ea5-4db3-b449-745ed2b1063f",
+			"key": "RECORD_SCHEMA",
 			"value": "",
 			"type": "string"
 		}
