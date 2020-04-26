@@ -2,23 +2,25 @@ import 'source-map-support/register'
 
 import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda'
 
-import { updateRecord } from '../../domain/records'
+import { updateRecord } from '../../domain/models/recordsModel'
 import { getUserId } from '../utils/requestUtilities'
-import {IUpdateRecordRequest} from "../../domain/interfaces/requests/IUpdateRecordRequest";
-import {IUpdateRecord} from "../../domain/interfaces/IUpdateRecord";
+import {UpdateRecordRequest} from "../../domain/models/requests/UpdateRecordRequest";
+import {DbRecord} from "../../domain/dataLayer/types/DbRecord";
 
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const userId = getUserId(event);
   const recordId = event.pathParameters.recordId
-  const newRecord: IUpdateRecordRequest = JSON.parse(event.body)
+  const newRecord: UpdateRecordRequest = JSON.parse(event.body)
 
-  const record: IUpdateRecord = {
+  const record: DbRecord = {
     recordId,
+
     userId,
+    entryDate: newRecord.entryDate,
     recordType: newRecord.recordType,
     notes: newRecord.notes,
-    images: newRecord.images,
+    attachments: newRecord.attachments,
   }
 
   await updateRecord(record);

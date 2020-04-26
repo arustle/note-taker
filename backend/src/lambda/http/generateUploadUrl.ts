@@ -2,7 +2,8 @@ import 'source-map-support/register'
 
 import { APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda'
 
-import { generateUploadInfo } from '../../domain/images'
+import { generateUploadInfo } from '../../domain/models/attachmentsModel'
+import {GetUploadInfoDto} from "../../../../client/src/api/dtos/GetUploadInfoDto";
 
 
 export const handler: APIGatewayProxyHandler = async (): Promise<APIGatewayProxyResult> => {
@@ -10,7 +11,7 @@ export const handler: APIGatewayProxyHandler = async (): Promise<APIGatewayProxy
     // const userId = getUserId(event);
     // const userId = "1";
 
-    const uploadInfo = await generateUploadInfo()
+    const uploadInfo: GetUploadInfoDto = await generateUploadInfo()
 
 
 

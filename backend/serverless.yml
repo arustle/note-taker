@@ -5,18 +5,31 @@ plugins:
   - serverless-webpack
   - serverless-dynamodb-local
   - serverless-offline
+  - serverless-s3-local
 
 provider:
   name: aws
   runtime: nodejs12.x
+
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+
   environment:
     IMAGES_S3_BUCKET: note-taker-xyz-images-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 600 # in seconds
+    RECORDS_TABLE: records-${self:provider.stage}
+    RECORD_ID_INDEX: RecordIdIndex
+    IS_OFFLINE: true
 
 
 custom:
   serverless-offline:
     port: 3003
+  s3:
+    port: 3004
+    directory: /s3Temp
+    cors: src/offline/s3-cors.xml
+    allowMismatchedSignatures: true
 
   dynamodb:
     stages:
@@ -32,8 +45,29 @@ functions:
     events:
       - http:
           method: post
-          path: images/upload-url
+          path: attachments/upload-info
           cors: true
+    iamRoleStatements:
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+          Resource: arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*
+        - Effect: Allow
+          Resource: "*"
+  GetRecord:
+    handler: src/lambda/http/getRecord.handler
+    events:
+      - http:
+          method: get
+          path: records/{recordId}
+          cors: true
+    iamRoleStatements:
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+          Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RECORDS_TABLE}
+        - Effect: Allow
+          Resource: "*"
   GetRecords:
     handler: src/lambda/http/getRecords.handler
     events:
@@ -41,6 +75,107 @@ functions:
           method: get
           path: records
           cors: true
+    iamRoleStatements:
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItems
+          Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RECORDS_TABLE}
+        - Effect: Allow
+          Resource: "*"
+  CreateRecord:
+    handler: src/lambda/http/createRecord.handler
+    events:
+      - http:
+          method: post
+          path: records
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RECORDS_TABLE}
+      - Effect: Allow
+        Resource: "*"
+  DeleteRecord:
+    handler: src/lambda/http/deleteRecord.handler
+    events:
+      - http:
+          method: delete
+          path: records/{recordId}
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RECORDS_TABLE}
+      - Effect: Allow
+        Resource: "*"
+
+
+resources:
+  Resources:
+    RecordsDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: recordId
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: recordId
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.RECORDS_TABLE}
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.RECORD_ID_INDEX}
+            KeySchema:
+              - AttributeName: recordId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+
+
+
+    AttachmentsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.IMAGES_S3_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
+
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: MyPolicy
+          Version: "2012-10-17"
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 's3:GetObject'
+              Resource: 'arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*'
+        Bucket: !Ref AttachmentsBucket
+
+
+    NewResource:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.IMAGES_S3_BUCKET}
 
 
 

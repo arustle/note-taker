@@ -1,7 +1,7 @@
 import 'source-map-support/register'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda'
-import { deleteRecord } from '../../domain/records'
+import { deleteRecord } from '../../domain/models/recordsModel'
 import { getUserId } from '../utils/requestUtilities'
 
 

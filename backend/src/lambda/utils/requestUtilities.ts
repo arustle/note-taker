@@ -8,3 +8,18 @@ export function getUserId(event: APIGatewayProxyEvent): string {
 
     return parseUserId(jwtToken)
 }
+
+export function removeEmptyAttributes (value: any) {
+    return Object.getOwnPropertyNames(value)
+        .reduce((o, k) => {
+            const v = value[k];
+            if (typeof (v) !== 'string' || v !== '') {
+                if (typeof (v) === 'object') {
+                    o[k] = removeEmptyAttributes(v);
+                } else {
+                    o[k] = v;
+                }
+            }
+            return o;
+        }, {});
+}
