@@ -182,6 +182,62 @@
 			"response": []
 		},
 		{
+			"name": "Update Record",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "eb3ccbf7-6daf-4492-a6ca-6ddda959780e",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});",
+							"",
+							"pm.test(\"body is empty\", function () {",
+							"    var jsonData = pm.response.text();",
+							"    pm.expect(jsonData).to.eql('');",
+							"});",
+							"",
+							"pm.test(\"Response time is less than 800ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(800);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{authToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"notes\": \"11111 22222 33333\",\n    \"recordType\": \"ANIMALS\",\n    \"entryDate\": \"2020-04-25T19:43:57.105Z\",\n    \"attachments\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server}}/records/0ec54840-3899-4c67-943e-d3700dc3dd99",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"records",
+						"0ec54840-3899-4c67-943e-d3700dc3dd99"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get Record",
 			"event": [
 				{
@@ -217,13 +273,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{server}}/records/3f7f4446-5174-4977-9497-408ac21e6813",
+					"raw": "{{server}}/records/86080ba7-e7cc-495c-bf23-692a665d8b20",
 					"host": [
 						"{{server}}"
 					],
 					"path": [
 						"records",
-						"3f7f4446-5174-4977-9497-408ac21e6813"
+						"86080ba7-e7cc-495c-bf23-692a665d8b20"
 					]
 				}
 			},
@@ -312,19 +368,19 @@
 	],
 	"variable": [
 		{
-			"id": "83622fae-5d0b-419e-ae22-f0ea6740008a",
+			"id": "1a0fb2af-13c1-47b3-a654-d765988f3ebf",
 			"key": "server",
 			"value": "http://localhost:3000/dev",
 			"type": "string"
 		},
 		{
-			"id": "81e73c9b-650e-45f1-bb38-6008fedb22c7",
+			"id": "a769280f-933a-493c-8d53-24b04045b552",
 			"key": "authToken",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "3bdddd71-6ea5-4db3-b449-745ed2b1063f",
+			"id": "b5153f50-8b29-4351-90bc-9ca963108902",
 			"key": "RECORD_SCHEMA",
 			"value": "",
 			"type": "string"

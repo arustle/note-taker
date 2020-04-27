@@ -33,6 +33,14 @@ export async function deleteRecord (userId: string, recordId: string): Promise<v
 }
 
 export async function getRecord (userId: string, recordId: string): Promise<GetRecordDto> {
+    if (recordId === 'new') {
+        return convertToDto({
+            entryDate: (new Date()).toISOString(),
+            attachments: [],
+            recordId: "new",
+            userId: ""
+        });
+    }
     const dbRecord: DbRecord = await recordAccess.getRecord(userId, recordId);
 
     if (!dbRecord) return null;

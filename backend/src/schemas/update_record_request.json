@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "record",
+  "type": "object",
+  "properties": {
+    "entryDate": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "recordType": {
+      "type": "string"
+    },
+    "attachments": {
+      "type": "array",
+      "properties": {
+        "attachmentId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "lastModifiedDate": {
+          "type": "string"
+        },
+        "size": {
+          "type": "number"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "additionalProperties": false
+}

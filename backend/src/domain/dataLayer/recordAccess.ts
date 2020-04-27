@@ -22,7 +22,7 @@ export default class RecordAccess {
         }
 
         // @ts-ignore
-        // this.docClient = new XAWS.DynamoDB.DocumentClient();
+        this.docClient = new AWS.DynamoDB.DocumentClient();
     }
 
 
@@ -30,8 +30,8 @@ export default class RecordAccess {
     async createRecord(newRecord: DbRecord): Promise<DbRecord> {
         const finalRecord = {
             ...newRecord,
-            createdDate: (new Date()).toString(),
-            lastModifiedDate: (new Date()).toString(),
+            createdDate: (new Date()).toISOString(),
+            lastModifiedDate: (new Date()).toISOString(),
             recordId: uuid.v4(),
         };
         const cleanRecord = removeEmptyAttributes(finalRecord);
@@ -56,7 +56,7 @@ export default class RecordAccess {
 
         const item = result.Item;
 
-        item.attachments = this._convertToArray(item.attachments);
+        item.attachments = (item) ? this._convertToArray(item.attachments) : [];
 
 
 
@@ -64,6 +64,7 @@ export default class RecordAccess {
     }
 
     async getRecords (userId: string): Promise<DbRecord[]> {
+        console.log(userId)
         const result = await this.docClient.query({
             TableName: this.recordsTable,
             KeyConditionExpression: 'userId = :userId',
@@ -83,30 +84,43 @@ export default class RecordAccess {
     }
 
     async updateRecord (record: DbRecord): Promise<void> {
+        const attrs: any = {
+            lastModifiedDate: {
+                Action: 'PUT',
+                Value: (new Date()).toISOString(),
+            },
+            attachments: {
+                Action: 'PUT',
+                Value: record.attachments || [],
+            }
+        };
+
+        if (record.entryDate) {
+            attrs.entryDate = {
+                Action: 'PUT',
+                Value: record.entryDate,
+            };
+        }
+        if (record.notes) {
+            attrs.notes = {
+                Action: 'PUT',
+                Value: record.notes,
+            };
+        }
+        if (record.recordType) {
+            attrs.recordType = {
+                Action: 'PUT',
+                Value: record.recordType,
+            };
+        }
+
         await this.docClient.update({
             TableName: this.recordsTable,
             Key: {
                 userId: record.userId,
                 recordId: record.recordId,
             },
-            AttributeUpdates: {
-                notes: {
-                    Action: 'PUT',
-                    Value: record.notes,
-                },
-                recordType: {
-                    Action: 'PUT',
-                    Value: record.recordType,
-                },
-                attachments: {
-                    Action: 'PUT',
-                    Value: record.attachments,
-                },
-                lastModifiedDate: {
-                    Action: 'PUT',
-                    Value: (new Date()).toString(),
-                },
-            }
+            AttributeUpdates: attrs
         }).promise();
 
     }
@@ -123,6 +137,7 @@ export default class RecordAccess {
     }
 
     _convertToArray (arr: any) {
+        if (Array.isArray(arr)) return arr;
 
         if (arr && arr.length > 0) {
             delete arr.length;

@@ -6,6 +6,9 @@ plugins:
   - serverless-iam-roles-per-function
 #  - serverless-reqvalidator-plugin
 #  - serverless-aws-documentation
+  - serverless-dynamodb-local
+  - serverless-offline
+  - serverless-s3-local
 
 provider:
   name: aws
@@ -19,9 +22,25 @@ provider:
     SIGNED_URL_EXPIRATION: 600 # in seconds
     RECORDS_TABLE: records-${self:provider.stage}
     RECORD_ID_INDEX: RecordIdIndex
+    IS_OFFLINE: true
 
 
 custom:
+  serverless-offline:
+    port: 3003
+  s3:
+    port: 3004
+    directory: /s3Temp
+    cors: src/offline/s3-cors.xml
+    allowMismatchedSignatures: true
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+
   documentation:
     api:
       info:
@@ -48,7 +67,7 @@ functions:
     iamRoleStatements:
       - Effect: Allow
         Action:
-          - dynamodb:Query
+          - dynamodb:GetItems
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RECORDS_TABLE}
   GetRecord:
     handler: src/lambda/http/getRecord.handler
@@ -191,6 +210,11 @@ resources:
               Resource: 'arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*'
         Bucket: !Ref AttachmentsBucket
 
+
+    NewResource:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.IMAGES_S3_BUCKET}
 
 
 
