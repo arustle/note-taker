@@ -1,11 +1,11 @@
-import React, {useState} from "react";
+import React from "react";
 import * as Auth0 from "auth0-js";
 import * as historyLib from 'history';
 import {AUTH_CONFIG} from "./auth.config";
 
 import { Plugins } from '@capacitor/core';
 import {IonReactRouter} from "@ionic/react-router";
-import {IonApp, IonRouterOutlet} from "@ionic/react";
+import {IonApp} from "@ionic/react";
 import {Redirect, Route, Switch} from "react-router-dom";
 const { Storage } = Plugins;
 
@@ -47,19 +47,20 @@ interface ProvideAuth {
     logout: () => void;
     handleAuthentication: () => void;
     isAuthenticated: () => boolean;
+    idToken: string;
 }
 
 const useProvideAuth = (): ProvideAuth => {
-    const [ isLoggedIn, setIsLoggedIn ] = React.useState(false);
-    const [ accessToken, setAccessToken ] = React.useState('');
+    // const [ isLoggedIn, setIsLoggedIn ] = React.useState(false);
+    // const [ accessToken, setAccessToken ] = React.useState('');
     const [ idToken, setIdToken ] = React.useState('');
     const [ expiresAt, setExpiresAt ] = React.useState(0);
 
 
     React.useEffect(() => {
         Promise.all([
-            storageGet('isLoggedIn').then(setIsLoggedIn),
-            storageGet('accessToken').then(setAccessToken),
+            // storageGet('isLoggedIn').then(setIsLoggedIn),
+            // storageGet('accessToken').then(setAccessToken),
             storageGet('idToken').then(setIdToken),
             storageGet('expiresAt').then(setExpiresAt),
         ]).then()
@@ -76,29 +77,27 @@ const useProvideAuth = (): ProvideAuth => {
         let tempExpiresAt = (authResult.expiresIn * 1000) + new Date().getTime();
 
         // Set isLoggedIn flag in localStorage
-        storageSet('isLoggedIn', true).then();
+        // storageSet('isLoggedIn', true).then();
         storageSet('accessToken', authResult.accessToken).then();
         storageSet('idToken', authResult.idToken).then();
         storageSet('expiresAt', tempExpiresAt).then();
 
-        console.log('tempExpiresAt', tempExpiresAt, expiresAt, authResult.expiresIn)
-        setAccessToken(authResult.accessToken);
+        // setAccessToken(authResult.accessToken);
         setIdToken(authResult.idToken);
         setExpiresAt(tempExpiresAt);
 
-        console.log('tempExpiresAt', tempExpiresAt, expiresAt, authResult)
 
         // navigate to the home route
         history.replace('/');
     }
     const clearSession = () => {
-        storageRemove('isLoggedIn').then();
-        storageRemove('accessToken').then();
+        // storageRemove('isLoggedIn').then();
+        // storageRemove('accessToken').then();
         storageRemove('idToken').then();
         storageRemove('expiresAt').then();
 
-        setIsLoggedIn(false);
-        setAccessToken('');
+        // setIsLoggedIn(false);
+        // setAccessToken('');
         setIdToken('');
         setExpiresAt(0);
 
@@ -116,7 +115,6 @@ const useProvideAuth = (): ProvideAuth => {
     }
 
     const handleAuthentication = () => {
-        console.log('rfrfrfrfrfr', window.location.hash)
         auth0.parseHash((err, authResult) => {
             console.log('authResultauthResult', authResult)
 
@@ -132,17 +130,17 @@ const useProvideAuth = (): ProvideAuth => {
         });
     }
 
-    const renewSession = () => {
-        auth0.checkSession({}, (err, authResult) => {
-            if (authResult && authResult.accessToken && authResult.idToken) {
-                setSession(authResult);
-            } else if (err) {
-                logout();
-                console.log(err);
-                alert(`Could not get a new token (${err.error}: ${err.error_description}).`);
-            }
-        });
-    };
+    // const renewSession = () => {
+    //     auth0.checkSession({}, (err, authResult) => {
+    //         if (authResult && authResult.accessToken && authResult.idToken) {
+    //             setSession(authResult);
+    //         } else if (err) {
+    //             logout();
+    //             console.log(err);
+    //             alert(`Could not get a new token (${err.error}: ${err.error_description}).`);
+    //         }
+    //     });
+    // };
 
     const isAuthenticated = (): boolean => {
         // Check whether the current time is past the
@@ -157,6 +155,7 @@ const useProvideAuth = (): ProvideAuth => {
         logout,
         isAuthenticated,
         handleAuthentication,
+        idToken,
     };
 }
 

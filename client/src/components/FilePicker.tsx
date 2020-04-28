@@ -9,29 +9,36 @@ interface FilePickerProps {
     onSelect: (attachments: Attachment[]) => void;
 }
 
+
 const FilePicker: React.FC<FilePickerProps> = ({onSelect}) => {
-    const [ files, setFiles ] = React.useState([]);
     const inputRef = React.useRef<HTMLInputElement>(null);
 
 
-    const pickFiles = (a: ChangeEvent<HTMLInputElement>) => {
+    const pickFiles = (fileSelectEvent: ChangeEvent<HTMLInputElement>) => {
         const selFiles = inputRef.current?.files;
         if (!selFiles?.length) return;
-
         const attachments: Attachment[] = Array.from(selFiles).map(file => {
             console.log('selectFile-22', file)
-
-            return new Attachment({
-                id: "",
+            const att = new Attachment({
+                attachmentId: "",
                 lastModifiedDate: moment(file.lastModified).toISOString(),
                 name: file.name,
                 size: file.size,
                 type: file.type,
-                url: ""
-            })
+                url: URL.createObjectURL(file)
+            });
+
+            att.uploadFile = file;
+
+            return att;
         });
 
-        onSelect(attachments)
+
+
+        onSelect(attachments);
+
+        // reset selection
+        fileSelectEvent.target.value = '';
     };
 
 
@@ -40,7 +47,7 @@ const FilePicker: React.FC<FilePickerProps> = ({onSelect}) => {
             <input ref={inputRef} type='file' style={{ opacity: 0, }} onChange={pickFiles} multiple />
 
             <IonButton onClick={() => inputRef?.current?.click()}>
-                <IonIcon icon={folderOpenOutline}></IonIcon>
+                <IonIcon icon={folderOpenOutline} />
             </IonButton>
         </>
     );

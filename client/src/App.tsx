@@ -1,10 +1,16 @@
 import React from 'react';
-import {Redirect, Route, Switch} from 'react-router-dom';
-import {IonApp, IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs} from '@ionic/react';
-import { images, listOutline, homeOutline } from 'ionicons/icons';
-import { IonReactRouter } from '@ionic/react-router';
+import {Route, Switch} from 'react-router-dom';
+import {
+    IonIcon,
+    IonLabel,
+    IonRouterOutlet,
+    IonTabBar,
+    IonTabButton,
+    IonTabs
+} from '@ionic/react';
+import {listOutline, homeOutline} from 'ionicons/icons';
 import Home from './pages/Home';
-import Items from './pages/Items';
+import RecordList from './pages/RecordList';
 import LogIn from './pages/Login';
 import RecordView from './pages/RecordView.route';
 
@@ -27,7 +33,6 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 import {useAuth} from "./auth/AuthProvider";
-import Tab2 from "./pages/Tab2";
 
 
 const App: React.FC<any> = () => {
@@ -35,34 +40,27 @@ const App: React.FC<any> = () => {
     const auth = useAuth();
 
 
-    // if (!auth.isAuthenticated()) return (<LogIn auth={auth} />);
+    if (!auth.isAuthenticated()) return (<LogIn auth={auth} />);
 
 
 
     return (
         <IonTabs>
             <IonRouterOutlet>
-                <Route exact path="/" component={Home} />
-                <Route exact path="/items" component={Items} />
-                <Route exact path="/tab2" component={Tab2} />
-                <Route exact path="/records/:recordId" component={RecordView} />
+                <Switch>
+                    <Route exact path="/" component={Home} />
+                    <Route exact path="/records" component={RecordList} />
+                    <Route exact path="/records/:recordId" component={RecordView} />
+                </Switch>
             </IonRouterOutlet>
             <IonTabBar slot="bottom">
-                <IonTabButton tab="tab1" href="/">
+                <IonTabButton tab="home" href="/">
                     <IonIcon icon={homeOutline}/>
                     <IonLabel>Home</IonLabel>
                 </IonTabButton>
-                <IonTabButton tab="tab2" href="/tab2">
-                    <IonIcon icon={images}/>
-                    <IonLabel>Photos</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="tab3" href="/items">
-                    <IonIcon icon={images}/>
-                    <IonLabel>Photos</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="tab4" href="/items">
+                <IonTabButton tab="records" href="/records">
                     <IonIcon icon={listOutline}/>
-                    <IonLabel>Items</IonLabel>
+                    <IonLabel>Records</IonLabel>
                 </IonTabButton>
             </IonTabBar>
         </IonTabs>
