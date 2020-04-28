@@ -5,6 +5,8 @@ import uuid from 'uuid';
 import {removeEmptyAttributes, } from "../../lambda/utils/requestUtilities";
 
 const XAWS = AWSXRay.captureAWS(AWS);
+import { createLogger } from '../../utils/logger';
+const logger = createLogger('RecordAccess');
 
 export default class RecordAccess {
     private readonly docClient;
@@ -36,6 +38,7 @@ export default class RecordAccess {
         };
         const cleanRecord = removeEmptyAttributes(finalRecord);
 
+        logger.info('CREATE_RECORD', cleanRecord);
         await this.docClient.put({
             TableName: this.recordsTable,
             Item: <any>cleanRecord,
@@ -46,6 +49,7 @@ export default class RecordAccess {
     }
 
     async getRecord (userId: string, recordId: string): Promise<DbRecord> {
+        logger.info('GET_RECORD', recordId);
         const result = await this.docClient.get({
             TableName: this.recordsTable,
             Key: {
@@ -64,7 +68,7 @@ export default class RecordAccess {
     }
 
     async getRecords (userId: string): Promise<DbRecord[]> {
-        console.log(userId)
+        logger.info('GET_RECORDS', userId);
         const result = await this.docClient.query({
             TableName: this.recordsTable,
             KeyConditionExpression: 'userId = :userId',
@@ -74,16 +78,14 @@ export default class RecordAccess {
         }).promise();
 
 
-        const items = (result.Items || []).map(x => {
+        return (result.Items || []).map(x => {
             x.attachments = this._convertToArray(x.attachments);
             return x;
         });
-
-
-        return items;
     }
 
     async updateRecord (record: DbRecord): Promise<void> {
+        logger.info('UPDATE_RECORDS', record);
         const attrs: any = {
             lastModifiedDate: {
                 Action: 'PUT',
@@ -127,6 +129,7 @@ export default class RecordAccess {
 
 
     async deleteRecord (userId: string, recordId: string): Promise<void> {
+        logger.info('DELETE_RECORDS', recordId);
         await this.docClient.delete({
             TableName: this.recordsTable,
             Key: {
