@@ -139,6 +139,8 @@
 							"pm.test(\"body schema is correct\", function () {",
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(tv4.validate(jsonData, pm.variables.get(\"RECORD_SCHEMA\"))).to.be.true;",
+							"    ",
+							"    pm.collectionVariables.set(\"RECORD_ID\", jsonData.item.recordId);",
 							"",
 							"});",
 							"",
@@ -163,6 +165,63 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"notes\": \"11111 22222 33333\",\n    \"recordType\": \"ANIMALS\",\n    \"entryDate\": \"2020-04-25T19:43:57.105Z\",\n    \"attachments\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server}}/records",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"records"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Record - Malformed Body",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ded0ee10-22b4-436a-840c-dcc40153238b",
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"body schema is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql('Invalid request body');",
+							"",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 800ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(800);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{authToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"notesA\": \"11111 22222 33333\",\n    \"recordType\": 0,\n    \"entryDate\": \"2020-04-25T19:43:57.105Z\",\n    \"attachments\": []\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -225,13 +284,71 @@
 					}
 				},
 				"url": {
-					"raw": "{{server}}/records/0ec54840-3899-4c67-943e-d3700dc3dd99",
+					"raw": "{{server}}/records/{{RECORD_ID}}",
 					"host": [
 						"{{server}}"
 					],
 					"path": [
 						"records",
-						"0ec54840-3899-4c67-943e-d3700dc3dd99"
+						"{{RECORD_ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Record - Malformed Body",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b0f21aa4-e778-4a5f-970a-efcd7f7c94a7",
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test(\"body schema is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql('Invalid request body');",
+							"",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 800ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(800);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer {{authToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"notes\": \"11111 22222 33333\",\n    \"recordType\": 0,\n    \"entryDate\": \"2020-04-25T19:43:57.105Z\",\n    \"attachments\": []\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server}}/records/{{RECORD_ID}}",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"records",
+						"{{RECORD_ID}}"
 					]
 				}
 			},
@@ -273,13 +390,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{server}}/records/86080ba7-e7cc-495c-bf23-692a665d8b20",
+					"raw": "{{server}}/records/{{RECORD_ID}}",
 					"host": [
 						"{{server}}"
 					],
 					"path": [
 						"records",
-						"86080ba7-e7cc-495c-bf23-692a665d8b20"
+						"{{RECORD_ID}}"
 					]
 				}
 			},
@@ -331,13 +448,13 @@
 					}
 				},
 				"url": {
-					"raw": "{{server}}/records/e8485ffc-a5d5-4f4d-b2bf-28aaae8d2620",
+					"raw": "{{server}}/records/{{RECORD_ID}}",
 					"host": [
 						"{{server}}"
 					],
 					"path": [
 						"records",
-						"e8485ffc-a5d5-4f4d-b2bf-28aaae8d2620"
+						"{{RECORD_ID}}"
 					]
 				}
 			},
@@ -368,20 +485,26 @@
 	],
 	"variable": [
 		{
-			"id": "1a0fb2af-13c1-47b3-a654-d765988f3ebf",
+			"id": "c38a0f60-7bf8-4a97-a8f0-e1baa5c5e652",
 			"key": "server",
 			"value": "http://localhost:3000/dev",
 			"type": "string"
 		},
 		{
-			"id": "a769280f-933a-493c-8d53-24b04045b552",
+			"id": "cbe05ea8-a6ea-4eee-b41f-c525ef768086",
 			"key": "authToken",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "b5153f50-8b29-4351-90bc-9ca963108902",
+			"id": "686a6d54-ac79-42d2-b42e-cbaa7682a4cb",
 			"key": "RECORD_SCHEMA",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "db561873-b0ec-4b54-adfd-20250d870af6",
+			"key": "RECORD_ID",
 			"value": "",
 			"type": "string"
 		}

@@ -1,10 +1,10 @@
 import * as AWS from 'aws-sdk'
-// import * as AWSXRay from 'aws-xray-sdk';
+import * as AWSXRay from 'aws-xray-sdk';
 import {DbRecord} from "./types/DbRecord";
 import uuid from 'uuid';
 import {removeEmptyAttributes, } from "../../lambda/utils/requestUtilities";
 
-// const XAWS = AWSXRay.captureAWS(AWS);
+const XAWS = AWSXRay.captureAWS(AWS);
 
 export default class RecordAccess {
     private readonly docClient;
@@ -22,7 +22,7 @@ export default class RecordAccess {
         }
 
         // @ts-ignore
-        this.docClient = new AWS.DynamoDB.DocumentClient();
+        this.docClient = new XAWS.DynamoDB.DocumentClient();
     }
 
 

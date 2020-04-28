@@ -4,8 +4,8 @@ service:
 plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
-#  - serverless-reqvalidator-plugin
-#  - serverless-aws-documentation
+  - serverless-reqvalidator-plugin
+  - serverless-aws-documentation
 
 provider:
   name: aws
@@ -19,6 +19,10 @@ provider:
     SIGNED_URL_EXPIRATION: 600 # in seconds
     RECORDS_TABLE: records-${self:provider.stage}
     RECORD_ID_INDEX: RecordIdIndex
+
+  tracing:
+    lambda: true
+    apiGateway: true
 
 
 custom:
@@ -50,6 +54,11 @@ functions:
         Action:
           - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RECORDS_TABLE}
+      - Effect: Allow
+        Action:
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource: "*"
   GetRecord:
     handler: src/lambda/http/getRecord.handler
     events:
@@ -62,6 +71,11 @@ functions:
         Action:
           - dynamodb:GetItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RECORDS_TABLE}
+      - Effect: Allow
+        Action:
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource: "*"
   CreateRecord:
     handler: src/lambda/http/createRecord.handler
     events:
@@ -80,6 +94,11 @@ functions:
         Action:
           - dynamodb:PutItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RECORDS_TABLE}
+      - Effect: Allow
+        Action:
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource: "*"
   UpdateRecord:
     handler: src/lambda/http/updateRecord.handler
     events:
@@ -98,6 +117,11 @@ functions:
         Action:
           - dynamodb:UpdateItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RECORDS_TABLE}
+      - Effect: Allow
+        Action:
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource: "*"
   DeleteRecord:
     handler: src/lambda/http/deleteRecord.handler
     events:
@@ -110,6 +134,11 @@ functions:
         Action:
           - dynamodb:DeleteItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.RECORDS_TABLE}
+      - Effect: Allow
+        Action:
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource: "*"
   GenerateUploadUrl:
     handler: src/lambda/http/generateUploadUrl.handler
     events:
@@ -122,6 +151,11 @@ functions:
         Action:
           - s3:PutObject
         Resource: arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*
+      - Effect: Allow
+        Action:
+          - xray:PutTraceSegments
+          - xray:PutTelemetryRecords
+        Resource: "*"
 
 
 resources:
@@ -190,7 +224,3 @@ resources:
               Action: 's3:GetObject'
               Resource: 'arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*'
         Bucket: !Ref AttachmentsBucket
-
-
-
-

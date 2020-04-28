@@ -14,27 +14,30 @@
     },
     "attachments": {
       "type": "array",
-      "properties": {
-        "attachmentId": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "lastModifiedDate": {
-          "type": "string"
-        },
-        "size": {
-          "type": "number"
-        },
-        "type": {
-          "type": "string"
+      "items": {
+        "type": "object",
+        "properties": {
+          "attachmentId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "lastModifiedDate": {
+            "type": "string"
+          },
+          "size": {
+            "type": "number"
+          },
+          "type": {
+            "type": "string"
+          }
         }
       }
     }
   },
   "required": [
-    "name"
+    "entryDate"
   ],
   "additionalProperties": false
 }
