@@ -6,5 +6,5 @@ export const apiEndpoint = `https://${apiId}.execute-api.us-east-1.amazonaws.com
 export const AUTH_CONFIG = {
   clientId: 'jaGPHsP26hXndaxXddaLR4jN2wmqYsZZ',
   domain: 'dev-ch11m2eo.auth0.com',
-  redirectUri: 'http://localhost:8100/callback',
+  redirectUri: 'http://localhost:3000/callback',
 }
