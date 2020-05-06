@@ -6,6 +6,7 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-reqvalidator-plugin
   - serverless-aws-documentation
+  - serverless-domain-manager
 
 provider:
   name: aws
@@ -39,7 +40,12 @@ custom:
       - name: UpdateRecordRequest
         contentType: application/json
         schema: ${file(src/schemas/update_record_request.json)}
-
+  customDomain:
+    domainName: api.measuringchange.com
+    basePath: ${self:provider.stage}
+    stage: ${self:provider.stage}
+    createRoute53Record: true
+    certificateName: "*.measuringchange.com"
 
 functions:
   GetRecords:
